@@ -15,6 +15,11 @@ from nltk.stem import SnowballStemmer
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 import gensim
+import folium
+from streamlit_folium import folium_static
+from folium.plugins import HeatMap, MarkerCluster
+from wordcloud import WordCloud
+import plotly.express as px
 
 def preprocess_text_column(column):
     # Supprimer les valeurs NaN de la colonne
@@ -85,18 +90,14 @@ def charger_donnees():
         offres.experience,
         offres.type_contrat,
         offres.secteur_activite,
-        offres.id_ville,
         offres.id_entreprise,
-        d_ville.id,
         d_ville.ville,
         d_ville.latitude,
         d_ville.longitude,
         d_ville.code_postal,
         d_ville.departement,
-        d_entreprise.id,
         d_entreprise.entreprise_nom,
         d_entreprise.entreprise_description,
-        h_departement.departement,
         h_departement.departement_nom,
         h_departement.region
         
@@ -121,7 +122,7 @@ st.set_page_config(layout="wide",  # Changer le titre de la page,
 )
 
 # Liste des onglets
-onglets = ["Accueil", "Statistiques", "Cartographie", "Analyse du corpus"]
+onglets = ["Accueil", "Statistiques", "Cartographies", "Analyse du corpus"]
 
 # Première "fenêtre"
 with st.sidebar:
@@ -212,6 +213,120 @@ with st.container():
         # Afficher le texte d'interprétation
         st.markdown(interpretation_text, unsafe_allow_html=True)
 
-    elif onglet_selectionne == "Statistiques":
+    elif onglet_selectionne == "Cartographies":
+        # Function to create Folium map with markers and dynamic count
+        def create_folium_map_dynamic_count(df, map_title = ''):
+            map_center = [df['latitude'].mean(), df['longitude'].mean()]
+            my_map = folium.Map(location=map_center, zoom_start=5)
+
+            marker_cluster = MarkerCluster().add_to(my_map)
+
+            for _, row in df.iterrows():
+                folium.Marker([row['latitude'], row['longitude']], popup=row['intitule'] + '  ' + row['ville'] + '  ' + ' ' + str(row['entreprise_nom']) if row['entreprise_nom'] is not None else ''  ).add_to(marker_cluster)
+
+            st.header(map_title)
+
+            # Use folium_static to display Folium map in Streamlit
+            folium_static(my_map)
+        
+
+        def filter_dataframe(df, filter_column, filter_values):
+            """Filter the DataFrame based on selected values in a specific column."""
+            return df[df[filter_column].isin(filter_values)]
+
+        # Function to create Folium heatmap with filtering and dynamic count
+        def create_folium_heatmap_dynamic_count(df, selected_filter_column, selected_filter_values, map_title = ""):
+            filtered_df = filter_dataframe(df, selected_filter_column, selected_filter_values)
+
+            if not filtered_df.empty:
+                map_center = [filtered_df['latitude'].mean(), filtered_df['longitude'].mean()]
+                my_map = folium.Map(location=map_center, zoom_start=5)
+
+                heat_data = [[row['latitude'], row['longitude']] for _, row in filtered_df.iterrows()]
+                HeatMap(heat_data, max_val=len(filtered_df['intitule'])).add_to(my_map)
+                
+                my_map.add_child(folium.LinearColormap(['green', 'yellow', 'red'], vmin=2, vmax=df['intitule'].value_counts().max()).add_to(my_map))
+                st.header(map_title)
+
+                # Use folium_static to display Folium map in Streamlit
+                folium_static(my_map)
+            else:
+                st.warning(f"No data available for the selected {selected_filter_column}")
+
+        # Map 1: Distribution et concentration des offres
+        st.header("Map 1: Distribution des offres d'emploi")
+
+        # Creation des filtres pour Map 1
+        selected_filter_1 = st.selectbox("Selectionner le niveau de filtrage (Map 1)", ["Region", "Departement", "Ville"], key="selected_filter_1", index=0)
+        if selected_filter_1 == "Region":
+            filter_options_1 = df['region'].unique()
+        elif selected_filter_1 == "Departement":
+            filter_options_1 = df['departement'].unique()
+        elif selected_filter_1 == "Ville":
+            filter_options_1 = df['ville'].unique()
+
+        selected_filter_values_1 = st.multiselect(f"Selection des {selected_filter_1}s ", filter_options_1, default=filter_options_1)
+
+        # Apply filters to create filtered DataFrame for Map 1
+        filtered_df_1 = df[df[selected_filter_1.lower()].isin(selected_filter_values_1)]
+
+        # Create Folium map with markers for Map 1
+        create_folium_map_dynamic_count(filtered_df_1,"Distribution des offres d'emploi")
+
+
+        # Map 2: Visualisation de l'ensemble des offres d'emplois
+        st.header("Map 2: Visualisation de l'ensemble des offres d'emplois")
+
+        map_center_2 = [df['latitude'].mean(), df['longitude'].mean()]
+        my_map_2 = folium.Map(location=map_center_2, zoom_start=5)
+
+        selected_filter_2 = st.selectbox("Selectionner le niveau de filtrage", ["Region", "Departement", "Ville"], key="selected_filter_2", index=0)
+        # print('selected_filter_2')
+        # print(selected_filter_2)
+        if selected_filter_2 == "Region":
+            filter_options_2 = df['region'].unique()
+        elif selected_filter_2 == "Departement":
+            filter_options_2 = df['departement'].unique()
+        elif selected_filter_2 == "Ville":
+            filter_options_2 = df['ville'].unique()
+
+        selected_filter_values_2 = st.multiselect(f"Selection des {selected_filter_2}s", filter_options_2, default=filter_options_2)
+
+        filtered_df_2 = df[df[selected_filter_2.lower()].isin(selected_filter_values_2)]
+
+        for _, row in filtered_df_2.iterrows():
+            folium.Marker([row['latitude'], row['longitude']], popup=row['intitule'] + '  ' + row['ville'] + '  ' + ' ' + str(row['entreprise_nom']) if row['entreprise_nom'] is not None else ''  ).add_to(my_map_2)
+        
+        st.header("Visualisation de l'ensemble des offres d'emplois")
+
+        # display Folium map in Streamlit
+        folium_static(my_map_2)
+
+        # Map 3 Heatmap - Concentration des offres d'emploi
+        st.header("Map 3: Heatmap - Concentration des offres d'emploi")
+
+        # Definition de filter_options 
+        select_all_button_3 = st.button("Select All", key="select_all_button_3")
+        deselect_all_button_3 = st.button("Deselect All", key="deselect_all_button_3")
+        selected_filter_3 = st.selectbox("Selectionner le niveau de filtrage", ["Region", "Departement", "Ville"], key='selected_filter_3')
+
+        filter_options_3 = df[selected_filter_3.lower()].unique()
+
+        # print('filter_options_3 :')
+        # print(filter_options_3)
+        # print('selected_filter_3 :')
+        # print(selected_filter_3)
+        selected_filter_values_3 = filter_options_3
+
+        if select_all_button_3:
+            selected_filter_values_3 = df[selected_filter_3.lower()].unique()
+        elif deselect_all_button_3:
+            selected_filter_values_3 = []
+        else:
+            selected_filter_values_3 = st.multiselect(f"Selection les {selected_filter_3}s ", filter_options_3, default=filter_options_3,)
+
+        create_folium_heatmap_dynamic_count(df, selected_filter_3.lower(), selected_filter_values_3, "Heatmap - Concentration des offres d'emploi")
+
+    elif onglet_selectionne == "Dashboard 2":
         st.subheader("Dashboard 2 :")
         # Ajoutez ici le contenu spécifique au Dashboard 2
