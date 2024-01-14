@@ -15,18 +15,6 @@ from nltk.stem import SnowballStemmer
 nltk.download('stopwords')
 from nltk.corpus import stopwords
 nltk.download('omw-1.4')
-#liste des ponctuations
-import string
-ponctuations = list(string.punctuation)
-import nltk
-nltk.download('punkt')
-from nltk.tokenize import word_tokenize
-nltk.download('wordnet')
-from nltk.stem import WordNetLemmatizer
-from nltk.stem import SnowballStemmer
-nltk.download('stopwords')
-from nltk.corpus import stopwords
-nltk.download('omw-1.4')
 
 def preprocess_text_column(column):
     # Supprimer les valeurs NaN de la colonne
