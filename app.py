@@ -90,10 +90,11 @@ def create_word2vec_plot(words, top_terms, label, marker='o'):
     return fig
 
 def create_word2vec_graph(corpus, vector_size=2, window=5, marker='o', label=None, nombre_mots_a_afficher=None):
+    mots_frequents = Counter([mot for phrase in corpus for mot in phrase])
+    mots_frequents = mots_frequents.most_common()
+    top_terms = [mot[0] for mot in mots_frequents[:nombre_mots_a_afficher]] if nombre_mots_a_afficher is not None else [mot[0] for mot in mots_frequents]
     modele = Word2Vec(corpus, vector_size=vector_size, window=window)
     words = modele.wv
-    terms = list(words.index_to_key)
-    top_terms = terms[:nombre_mots_a_afficher] if nombre_mots_a_afficher is not None else terms
     return create_word2vec_plot(words, top_terms, label, marker)
 
 
@@ -476,7 +477,7 @@ with st.container():
         elif granularité_selectionnee == "Région":
             liste_options = regions
             # Affichage du menu déroulant pour les régions
-            regions_selectionnees = st.multiselect('Sélectionnez les régions', liste_options)
+            regions_selectionnees = st.multiselect('Sélectionnez les régions', liste_options, default = liste_options)
 
             # Filtrer le DataFrame pour inclure uniquement les régions sélectionnées
             filtered_df = df[df['region'].isin(regions_selectionnees)]
@@ -556,7 +557,7 @@ with st.container():
 
             liste_options = departements
             # Affichage du menu déroulant
-            departements_selectionnees = st.multiselect('Sélectionnez les départements', liste_options)
+            departements_selectionnees = st.multiselect('Sélectionnez les départements', liste_options, default = liste_options)
 
             # Filtrer le DataFrame pour inclure uniquement les régions sélectionnées
             filtered_df = df[df['departement_nom'].isin(departements_selectionnees)]
