@@ -32,6 +32,6 @@ Vous devriez maintenant pouvoir explorer l'application Streamlit depuis votre na
 
 Note: Assurez-vous que le port 8501 est disponible et n'est pas utilisé par une autre application sur votre machine. Si le port est déjà utilisé, vous pouvez utiliser un autre port lors de la commande `docker run`, par exemple `-p 8080:8501`.
 
-lien youtubes des tutoriels videos: 
+liens youtube des tutoriels videos: 
 https://youtu.be/F_X4Phu80D8
 https://youtu.be/l38fpcoPPv0
