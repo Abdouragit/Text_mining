@@ -1,4 +1,13 @@
 # Text_mining
+## Présentation
+
+Bienvenue sur la page de notre projet de Text Mining, réalisé par Natacha Perez, Martin Revel et Abdourahmane Ndiaye. Nous mettons ici à disposition le code permettant d'utiliser notre application pour faire des analyses d'offres d'emplois scrappés sur les sites de Pôle emploi et de l'Apec.
+
+Pour plus d'informations sur le contenu du projet en général, notemment la mise en conteneur docker vous pourrez vous referer au rapport suivant: [http://localhost:8501](http://localhost:8501)
+
+Vous pourrez trouver dans [Scripts_ETL](http://localhost:8501) les codes ayant permis de scrapper les offres d'emploi, leur nettoyage ainsi que la création de la base de donnée.
+
+Vous pourrez également trouver dans [Application](http://localhost:8501) le code de l'application streamlit ainsi que la base de donnée pysqlite3.
 
 ## Importation de l'image Docker et lancement de l'application
 
