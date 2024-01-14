@@ -3,7 +3,7 @@
 
 Bienvenue sur la page de notre projet de Text Mining, réalisé par Natacha Perez, Martin Revel et Abdourahmane Ndiaye. Nous mettons ici à disposition le code permettant d'utiliser notre application pour faire des analyses d'offres d'emplois scrappés sur les sites de Pôle emploi et de l'Apec.
 
-Pour plus d'informations sur le contenu du projet en général, notemment la mise en conteneur docker vous pourrez vous referer au rapport suivant: [https://github.com/Abdouragit/Text_mining/blob/main/Rapport_Projet_Text_Mining.pdf](https://github.com/Abdouragit/Text_mining/blob/main/Rapport_Projet_Text_Mining.pdf)
+Pour plus d'informations sur le contenu du projet en général, notemment la mise en conteneur docker vous pourrez vous referer au rapport suivant: [Rapport_Projet_Text_Mining.pdf](https://github.com/Abdouragit/Text_mining/blob/main/Rapport_Projet_Text_Mining.pdf)
 
 Vous pourrez trouver dans [Scripts_ETL](https://github.com/Abdouragit/Text_mining/tree/main/Scripts_ETL) les codes ayant permis de scrapper les offres d'emploi, leur nettoyage ainsi que la création de la base de donnée.
 
