@@ -8,17 +8,17 @@ Assurez-vous que Docker-desktop est installé sur votre machine. Si ce n'est pas
 
 Ouvrez un terminal et exécutez la commande suivante pour télécharger l'image Docker de l'application :
 
-''' bash
+```
 docker pull abdouragit/nlpapp:1.0
-'''
+```
 
 ### Étape 2: Lancement de l'application
 
 Exécutez l'application Streamlit dans un conteneur Docker en utilisant la commande suivante :
 
-''' bash
+```bash
 docker run --rm -p 8501:8501 -it abdouragit/nlpapp:1.0
-'''
+```
 
 Cette commande démarre le conteneur Docker et redirige le port 8501 de votre machine vers le port 8501 du conteneur, où l'application Streamlit est en cours d'exécution.
 
